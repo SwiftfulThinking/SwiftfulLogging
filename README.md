@@ -24,6 +24,13 @@ let logger = LogManager(services: [ConsoleService()])
 let logger = LogManager(services: [MixpanelService(), FirebaseAnalyticsService(), AnotherDependencyService()])
 ```
 
+Optionally add to SwiftUI environment as an @Observable
+
+```swift
+Text("Hello, world!")
+    .environment(logger)
+```
+
 </details>
 
 ## Inject dependencies
