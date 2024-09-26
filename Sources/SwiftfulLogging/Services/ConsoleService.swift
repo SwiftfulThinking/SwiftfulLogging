@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  ConsoleService.swift
 //  SwiftfulLogging
 //
 //  Created by Nick Sarno on 9/25/24.
@@ -9,7 +9,7 @@ import Foundation
 import OSLog
 import SendableDictionary
 
-public struct ConsoleLogger: LogService {
+public struct ConsoleService: LogService {
 
     var printParameters: Bool = true
     
