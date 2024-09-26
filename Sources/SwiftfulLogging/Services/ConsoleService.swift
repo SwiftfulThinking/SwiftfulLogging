@@ -9,11 +9,15 @@ import Foundation
 import OSLog
 import SendableDictionary
 
-struct ConsoleLogger: LogService {
+public struct ConsoleLogger: LogService {
 
     var printParameters: Bool = true
+    
+    public init(printParameters: Bool) {
+        self.printParameters = printParameters
+    }
 
-    func trackEvent(event: LoggableEvent) {
+    public func trackEvent(event: LoggableEvent) {
         var value = "\(event.type.emoji) \(event.eventName)"
         if printParameters, let params = event.parameters, !params.isEmpty {
             for param in params {
@@ -24,11 +28,11 @@ struct ConsoleLogger: LogService {
         LogSystem.log(level: event.type, message: "\(value)")
     }
 
-    func trackScreenView(event: any LoggableEvent) {
+    public func trackScreenView(event: any LoggableEvent) {
         trackEvent(event: event)
     }
 
-    func identifyUser(userId: String, name: String?, email: String?) {
+    public func identifyUser(userId: String, name: String?, email: String?) {
         let string = """
 📈 Identify User
   userId: \(userId)
@@ -40,7 +44,7 @@ struct ConsoleLogger: LogService {
 
     }
 
-    func addUserProperties(dict: SendableDict) {
+    public func addUserProperties(dict: SendableDict) {
         var string = """
 📈 Log User Properties
 """
@@ -52,7 +56,7 @@ struct ConsoleLogger: LogService {
         LogSystem.log(level: .info, message: "\(string)")
     }
 
-    func deleteUserProfile() {
+    public func deleteUserProfile() {
         let string = """
 📈 Delete User Profile
 """
