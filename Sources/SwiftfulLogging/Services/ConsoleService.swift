@@ -16,18 +16,19 @@ public struct ConsoleService: LogService {
     public init(printParameters: Bool) {
         self.printParameters = printParameters
     }
-
+    
     public func trackEvent(event: LoggableEvent) {
         var value = "\(event.type.emoji) \(event.eventName)"
         if printParameters, let params = event.parameters, !params.isEmpty {
-            let sortedKeys = params.keys.sorted()
-            for key in sortedKeys {
-                if let paramValue = params[key] {
-                    value += "\n  (key: \"\(key)\", value: \(paramValue))"
-                }
+            // Convert each key-value pair into its string representation
+            let paramStrings = params.map { "(key: \"\($0.key)\", value: \($0.value))" }
+            // Sort the strings alphabetically
+            let sortedParamStrings = paramStrings.sorted()
+            for paramString in sortedParamStrings {
+                value += "\n  \(paramString)"
             }
         }
-
+        
         LogSystem.log(level: event.type, message: "\(value)")
     }
 
