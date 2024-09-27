@@ -52,6 +52,8 @@ Other services are not directly included, so that the developer can pick-and-cho
 Some pre-made dependencies are listed here...
 
 - Mixpanel: https://github.com/SwiftfulThinking/SwiftfulLoggingMixpanel
+- Firebase Analytics: https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseAnalytics.git
+- Firebase Crashlytics: https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseCrashlytics.git
 
 ...or create your own `LogService` by conforming to the protocol:
 
