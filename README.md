@@ -21,7 +21,7 @@ let logger = LogManager(services: [any LogService])
 let logger = LogManager(services: [ConsoleService()])
 
 // Example prod
-let logger = LogManager(services: [MixpanelService(), FirebaseAnalyticsService(), AnotherDependencyService()])
+let logger = LogManager(services: [MixpanelService(), FirebaseAnalyticsService(), FirebaseCrashlyticsService()])
 ```
 
 Optionally add to SwiftUI environment as an @Observable
