@@ -20,8 +20,11 @@ public struct ConsoleService: LogService {
     public func trackEvent(event: LoggableEvent) {
         var value = "\(event.type.emoji) \(event.eventName)"
         if printParameters, let params = event.parameters, !params.isEmpty {
-            for param in params {
-                value += "\n  \(param)"
+            let sortedKeys = params.keys.sorted()
+            for key in sortedKeys {
+                if let paramValue = params[key] {
+                    value += "\n  (key: \"\(key)\", value: \(paramValue))"
+                }
             }
         }
 
