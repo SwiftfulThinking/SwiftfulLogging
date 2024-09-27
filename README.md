@@ -49,13 +49,11 @@ let logger = LogManager(services: [consoleService])
 
 Other services are not directly included, so that the developer can pick-and-choose which dependencies to add to the project. 
 
-Some pre-made dependencies are listed here:
+Some pre-made dependencies are listed here...
 
-```swift
-// coming soon
-```
+- Mixpanel: https://github.com/SwiftfulThinking/SwiftfulLoggingMixpanel
 
-Create your own `LogService` by conforming to the protocol:
+...or create your own `LogService` by conforming to the protocol:
 
 ```swift
 public protocol LogService: Sendable {
