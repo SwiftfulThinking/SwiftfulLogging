@@ -8,6 +8,7 @@ A reusable logger for Swift applications, built for Swift 6. Includes `@Observab
 
 Pre-built dependencies*:
 
+- Console: Included
 - Mixpanel: https://github.com/SwiftfulThinking/SwiftfulLoggingMixpanel
 - Firebase Analytics: https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseAnalytics.git
 - Firebase Crashlytics: https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseCrashlytics.git
