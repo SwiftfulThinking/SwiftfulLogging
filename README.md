@@ -21,7 +21,7 @@ Pre-built dependencies*:
 <summary> Details (Click to expand) </summary>
 <br>
     
-Create an instance of LogManager:
+#### Create an instance of LogManager:
 
 ```swift
 let logger = LogManager(services: [any LogService])
@@ -33,7 +33,7 @@ let logger = LogManager(services: [ConsoleService()])
 let logger = LogManager(services: [MixpanelService(), FirebaseAnalyticsService(), FirebaseCrashlyticsService()])
 ```
 
-Optionally add to SwiftUI environment as an @Observable
+#### Optionally add to SwiftUI environment as an @Observable
 
 ```swift
 Text("Hello, world!")
@@ -50,7 +50,8 @@ Text("Hello, world!")
     
 `LogManager` is initialized by an array of `LogService`. This is a public protocol you can use to create your own dependencies.
 
-One service, `ConsoleLogger` is included within the package, which uses the `OSLog` framework to print to the console.
+`ConsoleLogger` is included within the package, which uses the `OSLog` framework to print to the console.
+
 ```swift
 let consoleService = ConsoleService(printParameters: true)
 let logger = LogManager(services: [consoleService])
@@ -78,7 +79,7 @@ public protocol LogService: Sendable {
 <summary> Details (Click to expand) </summary>
 <br>
     
-Log events manually:
+#### Log events manually:
 
 ```swift
 logger.trackEvent(eventName: "EventName")
@@ -86,14 +87,14 @@ logger.trackEvent(eventName: "EventName", parameters: ["ParameterName":true])
 logger.trackEvent(eventName: "EventName", parameters: ["ParameterName":true], type: .analytic)
 ```
 
-Use `AnyLoggableEvent` for convenience:
+#### Use `AnyLoggableEvent` for convenience:
 
 ```swift
 let event = AnyLoggableEvent(eventName: "EventName", parameters: ["ParameterName":true], type: .analytic)
 logger.trackEvent(event: event)
 ```
 
-Use `LoggableEvent` protocol to send your own types. Recommended approach:
+#### Use `LoggableEvent` protocol to send your own types. Recommended approach:
 
 ```swift
 enum Event: LoggableEvent {
@@ -137,7 +138,7 @@ let event = Event.screenDidAppear(title: "Title")
 logger.trackEvent(event: event)
 ```
 
-Optionally use the event's `LogType` to handle different types of events in your `LogService`.
+#### Optionally use the event's `LogType` to handle different types of events in your `LogService`.
 
 ```swift
 logger.trackEvent(eventName: "EventName", type .info) // Informational only
@@ -180,21 +181,21 @@ logger.trackScreenView(event: event)
 <summary> Details (Click to expand) </summary>
 <br>
     
-Identify the current user (aka log them in to injected Services)
+#### Identify the current user (aka log them in to injected Services)
 
 ```swift
 logger.identifyUser(userId: String, name: String?, email: String?)
 logger.identifyUser(userId: "abc123", name: "Nick", email: "hello@swiftful-thinking.com)
 ```
 
-Add user properties
+#### Add user properties
 
 ```swift
 logger.addUserProperties(dict: [String: Any])
 logger.addUserProperties(dict: SendableDict)
 ```
 
-Delete user 
+#### Delete user 
 
 ```swift
 logger.deleteUserProfile()
