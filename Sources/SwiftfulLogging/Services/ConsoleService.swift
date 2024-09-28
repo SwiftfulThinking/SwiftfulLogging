@@ -48,7 +48,7 @@ public struct ConsoleService: LogService {
 
     public func addUserProperties(dict: SendableDict) {
         var string = """
-📈 Log User Properties
+📈 Add User Properties
 """
 
         let params = dict.dict
