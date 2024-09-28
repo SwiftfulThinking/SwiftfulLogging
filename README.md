@@ -6,6 +6,14 @@
 
 A reusable logger for Swift applications, built for Swift 6. Includes `@Observable` support.
 
+Pre-built dependencies*:
+
+- Mixpanel: https://github.com/SwiftfulThinking/SwiftfulLoggingMixpanel
+- Firebase Analytics: https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseAnalytics.git
+- Firebase Crashlytics: https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseCrashlytics.git
+
+\* Created another? Send the url in [Issues](https://github.com/SwiftfulThinking/SwiftfulLogging/issues)! 🥳
+
 ## Setup
 
 <details>
@@ -49,13 +57,7 @@ let logger = LogManager(services: [consoleService])
 
 Other services are not directly included, so that the developer can pick-and-choose which dependencies to add to the project. 
 
-Some pre-made dependencies are listed here...
-
-- Mixpanel: https://github.com/SwiftfulThinking/SwiftfulLoggingMixpanel
-- Firebase Analytics: https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseAnalytics.git
-- Firebase Crashlytics: https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseCrashlytics.git
-
-...or create your own `LogService` by conforming to the protocol:
+You can create your own `LogService` by conforming to the protocol:
 
 ```swift
 public protocol LogService: Sendable {
