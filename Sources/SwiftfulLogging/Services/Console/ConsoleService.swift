@@ -51,9 +51,9 @@ public struct ConsoleService: LogService {
         logger.log(level: .info, message: "\(string)")
     }
 
-    public func addUserProperties(dict: SendableDict) {
+    public func addUserProperties(dict: SendableDict, isHighPriority: Bool) {
         var string = """
-📈 Add User Properties
+📈 Add User Properties: (isHighPriority: \(isHighPriority.description)"
 """
 
         if printParameters {

@@ -8,7 +8,7 @@ import SendableDictionary
 
 public protocol LogService: Sendable {
     func identifyUser(userId: String, name: String?, email: String?)
-    func addUserProperties(dict: SendableDict)
+    func addUserProperties(dict: SendableDict, isHighPriority: Bool)
     func deleteUserProfile()
 
     func trackEvent(event: LoggableEvent)
