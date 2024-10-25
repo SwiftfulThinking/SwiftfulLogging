@@ -11,9 +11,9 @@ import SendableDictionary
 
 public struct ConsoleService: LogService {
 
-    var printParameters: Bool = true
+    private var printParameters: Bool
     
-    public init(printParameters: Bool) {
+    public init(printParameters: Bool = true) {
         self.printParameters = printParameters
     }
 
@@ -36,12 +36,17 @@ public struct ConsoleService: LogService {
     }
 
     public func identifyUser(userId: String, name: String?, email: String?) {
-        let string = """
+        var string = """
 📈 Identify User
   userId: \(userId)
-  name: \(name ?? "unknown")
-  email: \(email ?? "unknown")
 """
+        if printParameters {
+            string += """
+
+  name: \(name ?? "nil")
+  email: \(email ?? "nil")
+"""
+        }
 
         LogSystem.log(level: .info, message: "\(string)")
     }
@@ -51,11 +56,13 @@ public struct ConsoleService: LogService {
 📈 Add User Properties
 """
 
-        let params = dict.dict
-        let sortedKeys = params.keys.sorted()
-        for key in sortedKeys {
-            if let paramValue = params[key] {
-                string += "\n  (key: \"\(key)\", value: \(paramValue))"
+        if printParameters {
+            let params = dict.dict
+            let sortedKeys = params.keys.sorted()
+            for key in sortedKeys {
+                if let paramValue = params[key] {
+                    string += "\n  (key: \"\(key)\", value: \(paramValue))"
+                }
             }
         }
 
