@@ -14,9 +14,9 @@ extension LogType {
         case .analytic:
             return .default
         case .warning:
-            return .fault
-        case .severe:
             return .error
+        case .severe:
+            return .fault
         }
     }
 }
