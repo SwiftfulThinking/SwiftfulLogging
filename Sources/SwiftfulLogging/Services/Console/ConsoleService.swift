@@ -6,12 +6,12 @@
 //
 
 import Foundation
-import OSLog
 import SendableDictionary
 
 public struct ConsoleService: LogService {
 
     private var printParameters: Bool
+    private let logger = LogSystem()
     
     public init(printParameters: Bool = true) {
         self.printParameters = printParameters
@@ -28,7 +28,7 @@ public struct ConsoleService: LogService {
             }
         }
 
-        LogSystem.log(level: event.type, message: "\(value)")
+        logger.log(level: event.type, message: "\(value)")
     }
 
     public func trackScreenView(event: any LoggableEvent) {
@@ -48,7 +48,7 @@ public struct ConsoleService: LogService {
 """
         }
 
-        LogSystem.log(level: .info, message: "\(string)")
+        logger.log(level: .info, message: "\(string)")
     }
 
     public func addUserProperties(dict: SendableDict) {
@@ -66,7 +66,7 @@ public struct ConsoleService: LogService {
             }
         }
 
-        LogSystem.log(level: .info, message: "\(string)")
+        logger.log(level: .info, message: "\(string)")
     }
 
     public func deleteUserProfile() {
@@ -74,38 +74,6 @@ public struct ConsoleService: LogService {
 📈 Delete User Profile
 """
 
-        LogSystem.log(level: .info, message: "\(string)")
-    }
-}
-
-actor LogSystem {
-    let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "ConsoleLogger")
-
-    static let instance = LogSystem()
-
-    nonisolated static func log(level: LogType, message: String) {
-        let level = level.OSLogType
-        Task {
-            await LogSystem.instance.log(level: level, message: message)
-        }
-    }
-
-    private func log(level: OSLogType, message: String) {
-        logger.log(level: level, "\(message)")
-    }
-}
-
-fileprivate extension LogType {
-    var OSLogType: OSLogType {
-        switch self {
-        case .info:
-            return .info
-        case .analytic:
-            return .default
-        case .warning:
-            return .fault
-        case .severe:
-            return .error
-        }
+        logger.log(level: .info, message: "\(string)")
     }
 }
