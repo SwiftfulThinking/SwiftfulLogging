@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SendableDictionary
 
 public struct ConsoleService: LogService {
 

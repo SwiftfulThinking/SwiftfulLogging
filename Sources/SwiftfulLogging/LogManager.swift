@@ -1,6 +1,4 @@
-
 import SwiftUI
-import SendableDictionary
 
 @MainActor
 @Observable
