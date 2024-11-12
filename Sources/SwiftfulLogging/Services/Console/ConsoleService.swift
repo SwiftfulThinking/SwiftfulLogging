@@ -51,16 +51,15 @@ public struct ConsoleService: LogService {
         logger.log(level: .info, message: "\(string)")
     }
 
-    public func addUserProperties(dict: SendableDict, isHighPriority: Bool) {
+    public func addUserProperties(dict: [String: Any], isHighPriority: Bool) {
         var string = """
 📈 Add User Properties: (isHighPriority: \(isHighPriority.description)"
 """
 
         if printParameters {
-            let params = dict.dict
-            let sortedKeys = params.keys.sorted()
+            let sortedKeys = dict.keys.sorted()
             for key in sortedKeys {
-                if let paramValue = params[key] {
+                if let paramValue = dict[key] {
                     string += "\n  (key: \"\(key)\", value: \(paramValue))"
                 }
             }

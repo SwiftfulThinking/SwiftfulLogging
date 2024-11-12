@@ -42,7 +42,7 @@ public class LogManager {
         }
     }
 
-    public func addUserProperties(dict: SendableDict, isHighPriority: Bool = false) {
+    public func addUserProperties(dict: [String: Any], isHighPriority: Bool = false) {
         for service in services {
             service.addUserProperties(dict: dict, isHighPriority: isHighPriority)
         }
