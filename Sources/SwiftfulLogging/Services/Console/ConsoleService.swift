@@ -52,7 +52,7 @@ public struct ConsoleService: LogService {
 
     public func addUserProperties(dict: [String: Any], isHighPriority: Bool) {
         var string = """
-📈 Add User Properties: (isHighPriority: \(isHighPriority.description)"
+📈 Add User Properties: (isHighPriority: \(isHighPriority.description))
 """
 
         if printParameters {
