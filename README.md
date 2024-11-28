@@ -1,6 +1,6 @@
-<p align="left">
-    <img src="https://github.com/user-attachments/assets/d82e7ca7-a7e9-4058-9f41-f483534e95c2" alt="Swift Logger" width="300px" />
-</p>
+❤️ This package is provided for free. Tips appreciated: https://www.buymeacoffee.com/nicksarno
+
+🚀 Learn how to build and use this package: https://www.swiftful-thinking.com/architecture
 
 # Logger for Swift 6 🪓
 
