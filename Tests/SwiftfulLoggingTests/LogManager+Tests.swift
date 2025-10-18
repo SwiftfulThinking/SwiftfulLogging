@@ -1,5 +1,4 @@
 import Testing
-import SendableDictionary
 @testable import SwiftfulLogging
 
 @MainActor
@@ -59,14 +58,13 @@ struct LogManagerTests {
         let mockService2 = MockLogService()
         let logManager = LogManager(services: [mockService1, mockService2])
         let dict: [String: Any] = ["property1": "value1", "property2": "value2"]
-        let sendableDict = SendableDict(dict: dict)
 
         // When
-        logManager.addUserProperties(dict: sendableDict)
+        logManager.addUserProperties(dict: dict, isHighPriority: false)
 
         // Then
-        #expect(mockService1.lastAddedUserProperties?.dict["property1"] as? String == "value1")
-        #expect(mockService2.lastAddedUserProperties?.dict["property1"] as? String == "value1")
+        #expect(mockService1.lastAddedUserProperties?["property1"] as? String == "value1")
+        #expect(mockService2.lastAddedUserProperties?["property1"] as? String == "value1")
     }
 
     @Test("LogManager deletes user profile and forwards the call to all services")
@@ -89,7 +87,8 @@ class MockLogService: @unchecked Sendable, LogService  {
     var lastTrackedEvent: LoggableEvent?
     var lastTrackedScreenView: LoggableEvent?
     var lastIdentifiedUser: (userId: String, name: String?, email: String?)?
-    var lastAddedUserProperties: SendableDict?
+    var lastAddedUserProperties: [String: Any]?
+    var lastIsHighPriority: Bool?
     var didDeleteUserProfile = false
 
     func trackEvent(event: LoggableEvent) {
@@ -104,8 +103,9 @@ class MockLogService: @unchecked Sendable, LogService  {
         lastIdentifiedUser = (userId, name, email)
     }
 
-    func addUserProperties(dict: SendableDict) {
+    func addUserProperties(dict: [String: Any], isHighPriority: Bool) {
         lastAddedUserProperties = dict
+        lastIsHighPriority = isHighPriority
     }
 
     func deleteUserProfile() {

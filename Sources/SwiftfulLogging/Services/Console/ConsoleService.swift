@@ -10,10 +10,11 @@ import Foundation
 public struct ConsoleService: LogService {
 
     private var printParameters: Bool
-    private let logger = LogSystem()
-    
-    public init(printParameters: Bool = true) {
+    private let logger: any LogSystem
+
+    public init(printParameters: Bool = true, system: LogSystemType = .stdout) {
         self.printParameters = printParameters
+        self.logger = system.createSystem()
     }
 
     public func trackEvent(event: LoggableEvent) {

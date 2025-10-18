@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree -L 3 /Users/nicksarno/Documents/documents/GITHUB/SwiftfulLogging -I \".git\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
