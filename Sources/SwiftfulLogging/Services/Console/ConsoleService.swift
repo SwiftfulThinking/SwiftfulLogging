@@ -23,7 +23,7 @@ public struct ConsoleService: LogService {
             let sortedKeys = params.keys.sorted()
             for key in sortedKeys {
                 if let paramValue = params[key] {
-                    value += "\n  (key: \"\(key)\", value: \(paramValue))"
+                    value += "\n    (key: \"\(key)\", value: \(paramValue))"
                 }
             }
         }
@@ -38,13 +38,13 @@ public struct ConsoleService: LogService {
     public func identifyUser(userId: String, name: String?, email: String?) {
         var string = """
 📈 Identify User
-  userId: \(userId)
+    - userId: \(userId)
 """
         if printParameters {
             string += """
 
-  name: \(name ?? "nil")
-  email: \(email ?? "nil")
+    - name: \(name ?? "nil")
+    - email: \(email ?? "nil")
 """
         }
 
@@ -60,7 +60,7 @@ public struct ConsoleService: LogService {
             let sortedKeys = dict.keys.sorted()
             for key in sortedKeys {
                 if let paramValue = dict[key] {
-                    string += "\n  (key: \"\(key)\", value: \(paramValue))"
+                    string += "\n    (key: \"\(key)\", value: \(paramValue))"
                 }
             }
         }
