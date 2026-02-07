@@ -9,7 +9,7 @@ import Foundation
 public enum LogType: Int, CaseIterable, Sendable {
     /// Use 'info' for informative tasks, such as tracking functions. These logs should not be considered issues or errors.
     case info // 0
-    /// Use 'analytic'' for all analytic events.
+    /// Use 'analytic' for all analytic events.
     case analytic // 1
     /// Use 'warning' for issues or errors that should not occur, but will not negatively affect user experience.
     case warning // 2

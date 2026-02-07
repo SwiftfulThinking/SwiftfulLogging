@@ -1,37 +1,41 @@
-### 🚀 Learn how to build and use this package: https://www.swiftful-thinking.com/offers/REyNLwwH
+# SwiftfulLogging
 
-# Logger for Swift 6 🪓
-
-A reusable logger for Swift applications, built for Swift 6. Includes `@Observable` support.
-
-Pre-built dependencies*:
-
-- Console: Included
-- Mixpanel: https://github.com/SwiftfulThinking/SwiftfulLoggingMixpanel
-- Firebase Analytics: https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseAnalytics.git
-- Firebase Crashlytics: https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseCrashlytics.git
-
-\* Created another? Send the url in [Issues](https://github.com/SwiftfulThinking/SwiftfulLogging/issues)! 🥳
+A reusable logger for Swift applications, built for Swift 6. `LogManager` coordinates multiple `LogService` implementations (Console, Firebase, Mixpanel, etc.) through a single API. Includes `@Observable` support.
 
 ## Setup
 
 <details>
 <summary> Details (Click to expand) </summary>
 <br>
-    
-#### Create an instance of LogManager:
 
-```swift
-let logger = LogManager(services: [any LogService])
+Add SwiftfulLogging to your project.
 
-// Example dev
-let logger = LogManager(services: [ConsoleService()])
-
-// Example prod
-let logger = LogManager(services: [MixpanelService(), FirebaseAnalyticsService(), FirebaseCrashlyticsService()])
+```
+https://github.com/SwiftfulThinking/SwiftfulLogging.git
 ```
 
-#### Optionally add to SwiftUI environment as an @Observable
+Import the package.
+
+```swift
+import SwiftfulLogging
+```
+
+Create an instance of `LogManager` with one or more services:
+
+```swift
+// Development — console only
+let logger = LogManager(services: [ConsoleService()])
+
+// Production — multiple services
+let logger = LogManager(services: [
+    ConsoleService(),
+    FirebaseAnalyticsService(),
+    FirebaseCrashlyticsService(),
+    MixpanelService(token: "your_token")
+])
+```
+
+Optionally add to the SwiftUI environment:
 
 ```swift
 Text("Hello, world!")
@@ -40,29 +44,37 @@ Text("Hello, world!")
 
 </details>
 
-## Inject dependencies
+## Services
 
 <details>
 <summary> Details (Click to expand) </summary>
 <br>
-    
-`LogManager` is initialized by an array of `LogService`. This is a public protocol you can use to create your own dependencies.
 
-`ConsoleLogger` is included within the package, which uses the `OSLog` framework to print to the console.
+`LogManager` is initialized with an array of `LogService`. `ConsoleService` is included in the package. Other services are separate packages so you can pick and choose:
+
+- **Console** — included, prints to console via OSLog or stdout
+- **Mixpanel** — [SwiftfulLoggingMixpanel](https://github.com/SwiftfulThinking/SwiftfulLoggingMixpanel)
+- **Firebase Analytics** — [SwiftfulLoggingFirebaseAnalytics](https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseAnalytics)
+- **Firebase Crashlytics** — [SwiftfulLoggingFirebaseCrashlytics](https://github.com/SwiftfulThinking/SwiftfulLoggingFirebaseCrashlytics)
+
+### ConsoleService
 
 ```swift
-let consoleService = ConsoleService(printParameters: true)
-let logger = LogManager(services: [consoleService])
+// Default — prints parameters, uses stdout
+let console = ConsoleService()
+
+// Custom — hide parameters, use OSLog
+let console = ConsoleService(printParameters: false, system: .osLog)
 ```
 
-Other services are not directly included, so that the developer can pick-and-choose which dependencies to add to the project. 
+### Custom LogService
 
-You can create your own `LogService` by conforming to the protocol:
+Create your own by conforming to the protocol:
 
 ```swift
 public protocol LogService: Sendable {
     func identifyUser(userId: String, name: String?, email: String?)
-    func addUserProperties(dict: SendableDict)
+    func addUserProperties(dict: [String: Any], isHighPriority: Bool)
     func deleteUserProfile()
     func trackEvent(event: LoggableEvent)
     func trackScreenView(event: LoggableEvent)
@@ -71,59 +83,57 @@ public protocol LogService: Sendable {
 
 </details>
 
-## Track events
+## Track Events
 
 <details>
 <summary> Details (Click to expand) </summary>
 <br>
-    
-#### Log events manually:
+
+Log events with a name, optional parameters, and a log type:
 
 ```swift
-logger.trackEvent(eventName: "EventName")
-logger.trackEvent(eventName: "EventName", parameters: ["ParameterName":true])
-logger.trackEvent(eventName: "EventName", parameters: ["ParameterName":true], type: .analytic)
+logger.trackEvent(eventName: "ButtonTapped")
+logger.trackEvent(eventName: "ButtonTapped", parameters: ["button_id": "save"])
+logger.trackEvent(eventName: "ButtonTapped", parameters: ["button_id": "save"], type: .analytic)
 ```
 
-#### Use `AnyLoggableEvent` for convenience:
+Use `AnyLoggableEvent` for convenience:
 
 ```swift
-let event = AnyLoggableEvent(eventName: "EventName", parameters: ["ParameterName":true], type: .analytic)
+let event = AnyLoggableEvent(eventName: "ButtonTapped", parameters: ["button_id": "save"], type: .analytic)
 logger.trackEvent(event: event)
 ```
 
-#### Use `LoggableEvent` protocol to send your own types. Recommended approach:
+**Recommended:** Use the `LoggableEvent` protocol with custom enums for type-safe events:
 
 ```swift
 enum Event: LoggableEvent {
-    case screenDidLoad
     case screenDidAppear(title: String)
+    case buttonTapped(id: String)
     case screenError(error: Error)
-    
+
     var eventName: String {
         switch self {
-        case .screenDidLoad:                return "ScreenLoad"
-        case .screenDidAppear(let title):   return "ScreenAppear"
-        case .screenError(let error):       return "ScreenError"
+        case .screenDidAppear:  return "ScreenAppear"
+        case .buttonTapped:     return "ButtonTapped"
+        case .screenError:      return "ScreenError"
         }
     }
-    
-    var parameters: [String : Any]? {
+
+    var parameters: [String: Any]? {
         switch self {
-        case .screenDidLoad:
-            return nil
         case .screenDidAppear(let title):
             return ["title": title]
+        case .buttonTapped(let id):
+            return ["button_id": id]
         case .screenError(let error):
-            return [
-                "error_description": error.localizedDescription
-            ]
+            return ["error_description": error.localizedDescription]
         }
     }
-    
+
     var type: LogType {
         switch self {
-        case .screenDidLoad, .screenDidAppear:
+        case .screenDidAppear, .buttonTapped:
             return .analytic
         case .screenError:
             return .severe
@@ -131,69 +141,79 @@ enum Event: LoggableEvent {
     }
 }
 ```
-```swift
-let event = Event.screenDidAppear(title: "Title")
-logger.trackEvent(event: event)
-```
-
-#### Optionally use the event's `LogType` to handle different types of events in your `LogService`.
 
 ```swift
-logger.trackEvent(eventName: "EventName", type .info) // Informational only
-logger.trackEvent(eventName: "EventName", type .analytics) // For typical analytics
-logger.trackEvent(eventName: "EventName", type .warning) // Warnings or issues that should not occur, but don't break the user experience
-logger.trackEvent(eventName: "EventName", type .severe) // Errors that break the user experience
+logger.trackEvent(event: Event.screenDidAppear(title: "Home"))
 ```
 
 </details>
 
-## Track screen views
+## Log Types
 
 <details>
 <summary> Details (Click to expand) </summary>
 <br>
-    
-The same logic as `trackEvent` above, except calling `trackScreenView` method. This is used in case the developer wants to do something unique for screen views (ie. some analytics services have a unique way of tracking these).
+
+Every event has a `LogType` that classifies its severity:
 
 ```swift
-// Manual
-logger.trackScreenView(eventName: "EventName")
-logger.trackScreenView(eventName: "EventName", parameters: ["ParameterName":true])
-logger.trackScreenView(eventName: "EventName", parameters: ["ParameterName":true], type: .analytic)
+logger.trackEvent(eventName: "UserLoaded", type: .info)      // Informational, not an issue
+logger.trackEvent(eventName: "ScreenAppear", type: .analytic) // Standard analytics (default)
+logger.trackEvent(eventName: "RetryFailed", type: .warning)   // Non-breaking issue
+logger.trackEvent(eventName: "CrashDetected", type: .severe)  // Breaks user experience
+```
 
-// Using AnyLoggableEvent
-let event = AnyLoggableEvent(eventName: "EventName", parameters: ["ParameterName":true], type: .analytic)
+| Type | Purpose |
+|---|---|
+| `.info` | Informational logging, not issues or errors |
+| `.analytic` | Standard analytics events (default) |
+| `.warning` | Issues that should not occur but don't break UX |
+| `.severe` | Critical errors that affect user experience |
+
+Services can use the log type to handle events differently. For example, `FirebaseCrashlyticsService` only records `.severe` events as errors.
+
+</details>
+
+## Track Screen Views
+
+<details>
+<summary> Details (Click to expand) </summary>
+<br>
+
+Track screen views separately from events. Some analytics services (e.g. Firebase Analytics) have dedicated screen view tracking.
+
+```swift
+let event = AnyLoggableEvent(eventName: "HomeScreen", type: .analytic)
 logger.trackScreenView(event: event)
 
-// Using LoggableEvent
-let event = Event.screenDidAppear(title: "Title")
-logger.trackScreenView(event: event)
+// Or with a custom LoggableEvent enum
+logger.trackScreenView(event: Event.screenDidAppear(title: "Home"))
 ```
 
 </details>
 
-
-## Manage user profile
+## Manage User Profile
 
 <details>
 <summary> Details (Click to expand) </summary>
 <br>
-    
-#### Identify the current user (aka log them in to injected Services)
+
+Identify the current user (log them in to all services):
 
 ```swift
-logger.identifyUser(userId: String, name: String?, email: String?)
-logger.identifyUser(userId: "abc123", name: "Nick", email: "hello@swiftful-thinking.com)
+logger.identifyUser(userId: "abc123", name: "Nick", email: "hello@swiftful-thinking.com")
 ```
 
-#### Add user properties
+Add user properties for analytics segmentation:
 
 ```swift
-logger.addUserProperties(dict: [String: Any])
-logger.addUserProperties(dict: SendableDict)
+logger.addUserProperties(dict: ["is_premium": true, "plan": "annual"])
+logger.addUserProperties(dict: ["account_type": "pro"], isHighPriority: true)
 ```
 
-#### Delete user 
+Note: `isHighPriority` matters for services with limited user property slots (e.g. Firebase Analytics only sets properties when `isHighPriority` is `true`).
+
+Delete user profile:
 
 ```swift
 logger.deleteUserProfile()
@@ -201,4 +221,15 @@ logger.deleteUserProfile()
 
 </details>
 
+## Claude Code
 
+This package includes a `.claude/swiftful-logging-rules.md` with usage guidelines, event patterns, and integration advice for projects using [Claude Code](https://claude.ai/claude-code).
+
+## Platform Support
+
+- **iOS 17.0+**
+- **macOS 14.0+**
+
+## License
+
+SwiftfulLogging is available under the MIT license.
