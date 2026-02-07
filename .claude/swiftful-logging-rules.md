@@ -249,6 +249,83 @@ Use `trackScreenEvent` for screen appear events. Use `trackEvent` for everything
 
 Firebase Analytics has a 25 user property limit. `addUserProperties(isHighPriority: true)` ensures the property is set in Firebase. Non-high-priority properties are only set in services without limits (e.g. Mixpanel). Use `isHighPriority: true` for key segmentation properties (subscription status, account type, etc.).
 
+## Manager-Layer Logging
+
+Most logging happens in the Presenter layer, but Managers also log internally. There are two patterns:
+
+### Pattern 1: Manager defines its own Event enum
+
+Some app-level managers (UserManager, ABTestManager, PushManager) define their own `Event: LoggableEvent` enums and accept `LogManager` directly:
+
+```swift
+class UserManager {
+    private let logger: LogManager?
+
+    init(logger: LogManager? = nil) {
+        self.logger = logger
+    }
+
+    enum Event: LoggableEvent {
+        case logInStart(user: UserModel?)
+        case logInSuccess(user: UserModel?)
+        case signOut
+        case deleteAccountStart
+        case deleteAccountSuccess
+
+        var eventName: String { ... }
+        var parameters: [String: Any]? { ... }
+        var type: LogType { .analytic }  // manager events are typically .analytic
+    }
+
+    func logIn(user: UserModel) async throws {
+        logger?.trackEvent(event: Event.logInStart(user: user))
+        // ... perform login
+        logger?.trackEvent(event: Event.logInSuccess(user: user))
+    }
+}
+```
+
+Managers also call `addUserProperties()` to set persistent analytics properties:
+
+```swift
+logger?.addUserProperties(dict: ["is_premium": true], isHighPriority: true)
+```
+
+### Pattern 2: Package defines its own logger protocol
+
+Many Swiftful packages define their own logger protocols (separate from `LoggableEvent`). The app makes `LogManager` conform via retroactive conformance, then passes it as the logger:
+
+| Package | Logger Protocol | Conformance |
+|---|---|---|
+| SwiftfulHaptics | `HapticLogger` | `extension LogManager: @retroactive HapticLogger` |
+| SwiftfulSoundEffects | `SoundEffectLogger` | `extension LogManager: @retroactive SoundEffectLogger` |
+| SwiftfulRouting | `RoutingLogger` | `SwiftfulRoutingLogger.enableLogging(logger: logManager)` |
+
+```swift
+// Retroactive conformance — LogManager adapts to each package's protocol
+extension LogManager: @retroactive HapticLogger {
+    public func trackEvent(event: any HapticLogEvent) {
+        trackEvent(eventName: event.eventName, parameters: event.parameters, type: event.type.logType)
+    }
+}
+```
+
+### Wiring it all together
+
+At app startup, `LogManager` is passed to every manager as their logger:
+
+```swift
+// All managers receive the same LogManager instance
+userManager = UserManager(logger: logManager)
+abTestManager = ABTestManager(logManager: logManager)
+pushManager = PushManager(logManager: logManager)
+hapticManager = HapticManager(logger: logManager)          // via HapticLogger protocol
+soundEffectManager = SoundEffectManager(logger: logManager) // via SoundEffectLogger protocol
+SwiftfulRoutingLogger.enableLogging(logger: logManager)     // via RoutingLogger protocol
+```
+
+This means ALL logging from every layer (Views, Presenters, Managers, and even third-party packages) flows through the single `LogManager` and gets distributed to all configured services.
+
 ## Architecture Examples
 
 ### MVC (pure SwiftUI) — @Environment
