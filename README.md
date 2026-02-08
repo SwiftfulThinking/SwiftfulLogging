@@ -1,3 +1,5 @@
+### 🚀 Learn how to build and use this package: https://www.swiftful-thinking.com/offers/REyNLwwH
+
 # SwiftfulLogging
 
 A reusable logger for Swift applications, built for Swift 6. `LogManager` coordinates multiple `LogService` implementations (Console, Firebase, Mixpanel, etc.) through a single API. Includes `@Observable` support.
